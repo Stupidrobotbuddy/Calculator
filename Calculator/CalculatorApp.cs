@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CalculatorOperations;
 
 namespace Calculator
 {
     public class CalculatorApp
     {
+        private IOperation Strategy;
         private string? State;
         private float x, y;
 
@@ -22,41 +19,48 @@ namespace Calculator
 
             string input = Console.ReadLine();
             State = input.ToUpper();
-            
+
             Console.WriteLine();
 
-            Console.WriteLine("Input X value:");
-            x = float.Parse(Console.ReadLine());
-
-
-            Console.WriteLine("Input Y value:");
-            y = float.Parse(Console.ReadLine());
+            
 
             CalculateResult();
             Console.Clear();
         }
 
+        void setStrategy(IOperation Strategy)
+        {
+            this.Strategy = Strategy;
+        }
+
+        void executeStrategy(float x, float y)
+        {
+           
+             float result = Strategy.execute(x, y);
+             Console.WriteLine("The resullt is...");
+            Console.WriteLine(result + "!");
+            Console.ReadKey();
+        }
+
         void CalculateResult()
         {
-            float temp = 0;
             switch (State)
             {
                 case "A":
-                    temp = Addition(x, y);
+                    setStrategy(new AdditionStrategy());
                     break;
                 case "B":
-                    temp = Subtraction(x, y);
+                    setStrategy(new SubtractionStrategy());
                     break;
                 case "M":
-                    temp = Multiplication(x, y);
+                    setStrategy(new MultiplicationStrategy());
                     break;
                 case "D":
-                    temp = Division(x, y);
+                    setStrategy(new DivisionStrategy());
                     break;
                 case "E":
                     Environment.Exit(0);
                     break;
-
                 default:
                     Console.WriteLine("Invalid input, please try again");
                     Console.ReadKey();
@@ -64,33 +68,29 @@ namespace Calculator
             }
 
 
-            Console.WriteLine("the answer is..." + temp + "!");
-            Console.ReadKey();
-        }
+            Console.WriteLine("please input X value");
+            string XInput = Console.ReadLine();
+            Console.WriteLine("please input Y value");
+            string YInput = Console.ReadLine();
 
-        private float Addition(float X, float Y)
-        {
-            return X + Y;
-        }
 
-        private float Subtraction(float X, float Y)
-        {
-            return X - Y;
-        }
-
-        private float Multiplication(float X, float Y)
-        {
-            return X * Y;
-        }
-
-        private float Division(float X, float Y)
-        {
-            if (Y != 0)
+            while (!float.TryParse(XInput, out this.x) || !float.TryParse(YInput, out this.y))
             {
-                return X / Y;
+                Console.WriteLine("Invalid Input Detected!");
+                Console.ReadLine();
+
+                Console.WriteLine("Please input A NUMERICAL X value");
+                XInput = Console.ReadLine();
+                Console.WriteLine("Please input A NUMERICAL Y value");
+                YInput = Console.ReadLine();
             }
-            Y = 1;
-            return X / Y;
+
+            Console.WriteLine();
+
+            executeStrategy(x, y);
+            
         }
+        
+        
     }
 }
